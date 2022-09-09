@@ -28,11 +28,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	//Defindo constantes para liberar as rotas
 	private static final String[] PUBLIC = { "/oauth/token", "/h2-console/**" };
 	
-	private static final String[] OPERATOR_OR_ADMIN = { "/products/**", "/categories/**" };
+	private static final String[] OPERATOR_GET = { "/departments/**", "/employees/**" };
 	
-	private static final String[] ADMIN = { "/users/**" };
-	
-	
+
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
 		// Configurar o tokenStore
@@ -53,13 +51,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 		
 		http.authorizeRequests()
 		.antMatchers(PUBLIC).permitAll()
-		// libera somente o metodo GET no vetor OPERATOR_OR_ADMIN
-		.antMatchers(HttpMethod.GET, OPERATOR_OR_ADMIN).permitAll()
-		// libera para o vetor OPERATOR_OR_ADMIN para os roles OPERATOR e ADMIN
-		.antMatchers(OPERATOR_OR_ADMIN).hasAnyRole("OPERATOR", "ADMIN")
-		.antMatchers(ADMIN).hasRole("ADMIN")
-		// qualquer outra rota que não foi passada aqui tem que estar logado
-		.anyRequest().authenticated();
+		.antMatchers(HttpMethod.GET, OPERATOR_GET).hasAnyRole("OPERATOR", "ADMIN")
+		.anyRequest().hasAnyRole("ADMIN");
 	}
 
 	
